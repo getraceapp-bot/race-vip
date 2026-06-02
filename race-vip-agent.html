@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RACE VIP Agent</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{
+  --o:#E66A2A;--o2:#ff7a35;--od:rgba(230,106,42,0.13);--og:rgba(230,106,42,0.3);
+  --bg:#080808;--s1:#111;--s2:#181818;--s3:#202020;
+  --b1:#252525;--b2:#303030;
+  --txt:#f5f5f5;--dim:#777;
+  --green:#2ecc71;--gd:rgba(46,204,113,0.13);
+  --red:#e74c3c;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+
+/* ANIMATED BG */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-orb1{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(230,106,42,0.08) 0%,transparent 65%);top:-150px;right:-150px;animation:orb1 9s ease-in-out infinite}
+.bg-orb2{position:absolute;width:350px;height:350px;background:radial-gradient(circle,rgba(230,106,42,0.05) 0%,transparent 65%);bottom:-80px;left:-80px;animation:orb2 12s ease-in-out infinite}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(230,106,42,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(230,106,42,0.025) 1px,transparent 1px);background-size:36px 36px}
+@keyframes orb1{0%,100%{transform:scale(1) translate(0,0);opacity:.7}50%{transform:scale(1.15) translate(-20px,20px);opacity:1}}
+@keyframes orb2{0%,100%{transform:scale(1) translate(0,0);opacity:.5}50%{transform:scale(1.2) translate(15px,-15px);opacity:.9}}
+
+/* LOADING */
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:20px}
+.load-logo{width:72px;height:72px;border-radius:16px;animation:logopulse 1.5s ease-in-out infinite}
+@keyframes logopulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.7;transform:scale(0.95)}}
+.load-bar{width:160px;height:2px;background:var(--b2);border-radius:2px;overflow:hidden}
+.load-bar-inner{width:40%;height:100%;background:var(--o);animation:loadslide 1.2s ease-in-out infinite;border-radius:2px}
+@keyframes loadslide{0%{transform:translateX(-100%)}100%{transform:translateX(350%)}}
+.load-text{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:2px}
+
+/* ERROR */
+#error{display:none;position:fixed;inset:0;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;z-index:300;gap:12px;padding:24px;text-align:center}
+.err-icon{font-size:40px}
+.err-txt{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);max-width:300px;line-height:1.6}
+
+/* APP */
+#app{display:none;position:relative;z-index:1}
+
+/* HEADER */
+.hdr{padding:18px 20px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(8,8,8,0.93);backdrop-filter:blur(16px);z-index:100}
+.hdr-left{display:flex;align-items:center;gap:10px}
+.hdr-logo{width:36px;height:36px;border-radius:8px}
+.hdr-title{font-size:16px;font-weight:800;letter-spacing:-0.3px}
+.hdr-title span{color:var(--o)}
+.hdr-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--o);background:var(--od);border:1px solid var(--og);padding:4px 10px;border-radius:20px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* MAIN */
+main{padding:20px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:16px;padding-bottom:40px}
+
+/* EARNINGS HERO */
+.earn-hero{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:24px;position:relative;overflow:hidden}
+.earn-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--o),var(--o2),var(--o));background-size:200%;animation:shimmer 3s linear infinite}
+.earn-hero::after{content:'';position:absolute;top:-80px;right:-80px;width:250px;height:250px;background:radial-gradient(circle,rgba(230,106,42,0.08) 0%,transparent 65%);pointer-events:none}
+@keyframes shimmer{0%{background-position:0%}100%{background-position:200%}}
+.earn-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:10px}
+.earn-num{font-size:48px;font-weight:900;letter-spacing:-2px;line-height:1;color:var(--o);position:relative;z-index:1}
+.earn-num sup{font-size:18px;font-weight:600;color:var(--dim);letter-spacing:0;vertical-align:super;margin-left:4px}
+.earn-desc{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-top:14px;line-height:1.5}
+.earn-desc strong{color:var(--txt)}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:8px;padding:14px;text-align:center}
+.stat-v{font-size:22px;font-weight:800;margin-bottom:3px}
+.stat-v.o{color:var(--o)}
+.stat-v.g{color:var(--green)}
+.stat-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:0.5px}
+
+/* INVITE CARD */
+.invite-card{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:22px}
+.card-sec-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:16px}
+.ref-box{background:var(--bg);border:1px solid var(--og);border-radius:6px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.ref-link{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--o);flex:1;word-break:break-all;line-height:1.5}
+.copy-btn{flex-shrink:0;padding:7px 13px;background:none;border:1px solid var(--og);color:var(--o);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;border-radius:4px;transition:all 0.2s;letter-spacing:0.5px}
+.copy-btn:hover{background:var(--od)}
+.copy-btn.ok{border-color:var(--green);color:var(--green)}
+
+/* SHARE BUTTONS */
+.share-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.share-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border:1px solid var(--b2);background:var(--s2);color:var(--txt);font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;border-radius:6px;transition:all 0.2s}
+.share-btn:hover{border-color:var(--o);background:var(--od)}
+.share-btn.wa{border-color:rgba(37,211,102,0.35)}
+.share-btn.wa:hover{background:rgba(37,211,102,0.1);border-color:rgba(37,211,102,0.7)}
+.share-btn svg{flex-shrink:0}
+
+/* QR TOGGLE */
+.qr-toggle-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-top:1px solid var(--b1);background:none;border-left:none;border-right:none;border-bottom:none;cursor:pointer;color:var(--txt)}
+.qr-toggle-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1.5px}
+.qr-arrow{color:var(--dim);font-size:14px;transition:transform 0.3s}
+.qr-body{display:none;padding-top:20px;text-align:center}
+.qr-body.open{display:block}
+#qr-code{display:inline-block;padding:14px;background:#fff;border-radius:6px}
+.qr-cap{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:10px;letter-spacing:1px}
+
+/* INVITES MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--s1);border:1px solid var(--b1);border-radius:16px 16px 0 0;width:100%;max-width:640px;max-height:80vh;display:flex;flex-direction:column;animation:slideup 0.35s cubic-bezier(0.34,1.56,0.64,1)}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-hdr{padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.modal-title{font-size:16px;font-weight:700}
+.modal-count{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--o);background:var(--od);padding:4px 10px;border-radius:20px}
+.modal-close{background:none;border:none;color:var(--dim);font-size:22px;cursor:pointer;padding:4px;line-height:1}
+.modal-handle{width:40px;height:4px;background:var(--b2);border-radius:2px;margin:14px auto 0}
+.modal-body{flex:1;overflow-y:auto;padding:16px 20px 24px;-webkit-overflow-scrolling:touch}
+.modal-body::-webkit-scrollbar{width:4px}
+.modal-body::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+.invite-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--b1)}
+.invite-row:last-child{border-bottom:none}
+.inv-name{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--o)}
+.inv-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.inv-joined{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);background:var(--s3);padding:3px 8px;border-radius:10px}
+
+/* INVITES BUTTON */
+.invites-btn{width:100%;padding:16px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:all 0.2s;color:var(--txt)}
+.invites-btn:hover{border-color:var(--og);background:var(--od)}
+.invites-btn-left{display:flex;align-items:center;gap:12px}
+.invites-icon{width:40px;height:40px;background:var(--od);border:1px solid var(--og);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.invites-btn-title{font-size:15px;font-weight:700;margin-bottom:2px}
+.invites-btn-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.invites-count-badge{font-size:22px;font-weight:800;color:var(--o)}
+
+/* TX SECTION */
+.tx-card{background:var(--s1);border:1px solid var(--b1);border-radius:10px;overflow:hidden}
+.tx-hdr{padding:18px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.tx-hdr-title{font-size:14px;font-weight:700}
+.tx-hdr-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--s2);padding:4px 10px;border-radius:20px}
+.tx-row{padding:14px 20px;border-bottom:1px solid var(--s3);display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;transition:background 0.15s}
+.tx-row:last-child{border-bottom:none}
+.tx-row:hover{background:var(--s2)}
+.tx-user{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--o);margin-bottom:3px}
+.tx-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.tx-spent{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-bottom:3px;text-align:right}
+.tx-earn{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--green);font-weight:600;text-align:right}
+.tx-empty{padding:40px 20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);line-height:1.8}
+
+/* FOOTER */
+footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--b2);letter-spacing:1px}
+
+/* RESPONSIVE */
+@media(max-width:420px){
+  .earn-num{font-size:40px}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  main{padding:14px;gap:12px}
+}
+.rbadge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#E66A2A;color:#fff;font-weight:900;font-size:18px;border-radius:8px;flex-shrink:0;font-family:'Outfit',sans-serif;}
+</style>
+</head>
+<body>
+<div class="bg"><div class="bg-orb1"></div><div class="bg-orb2"></div><div class="bg-grid"></div></div>
+
+<div id="loading">
+  <span class="rbadge">R</span>
+  <div class="load-bar"><div class="load-bar-inner"></div></div>
+  <div class="load-text">LOADING YOUR PORTAL...</div>
+</div>
+
+<div id="error">
+  <div class="err-icon">⚠</div>
+  <div class="err-txt" id="err-msg">Agent not found. Please use the link provided by RACE admin.</div>
+</div>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-left">
+      <span class="rbadge">R</span>
+      <div class="hdr-title">RACE <span>VIP</span></div>
+    </div>
+    <div class="hdr-badge" id="hdr-name">—</div>
+  </div>
+
+  <main>
+    <!-- EARNINGS -->
+    <div class="earn-hero">
+      <div class="earn-lbl">// YOUR TOTAL EARNINGS</div>
+      <div class="earn-num" id="earn-total">0<sup>IQD</sup></div>
+      <div class="earn-desc" id="earn-desc">Loading your data...</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-v o" id="st-invites">0</div><div class="stat-l">INVITES</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-txs">0</div><div class="stat-l">FILLS</div></div>
+      <div class="stat-card"><div class="stat-v g" id="st-spend">0</div><div class="stat-l">TOTAL IQD</div></div>
+    </div>
+
+    <!-- INVITES BUTTON -->
+    <button class="invites-btn" onclick="openInvites()">
+      <div class="invites-btn-left">
+        <div class="invites-icon">👥</div>
+        <div>
+          <div class="invites-btn-title">MY RACE ARMY</div>
+          <div class="invites-btn-sub">Tap to see all your invites</div>
+        </div>
+      </div>
+      <div class="invites-count-badge" id="inv-count-badge">0</div>
+    </button>
+
+    <!-- INVITE CARD -->
+    <div class="invite-card">
+      <div class="card-sec-lbl">// INVITE DRIVERS</div>
+      <div class="ref-box">
+        <div class="ref-link" id="ref-link-txt">—</div>
+        <button class="copy-btn" id="copy-ref-btn" onclick="copyRef()">COPY</button>
+      </div>
+      <div class="share-grid">
+        <a class="share-btn wa" id="wa-btn" href="#" target="_blank" rel="noopener">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          WHATSAPP
+        </a>
+        <button class="share-btn" onclick="shareLink()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          SHARE
+        </button>
+      </div>
+      <button class="qr-toggle-btn" onclick="toggleQR()">
+        <span class="qr-toggle-lbl">// QR CODE FOR NEARBY SCAN</span>
+        <span class="qr-arrow" id="qr-arrow">▼</span>
+      </button>
+      <div class="qr-body" id="qr-body">
+        <div id="qr-code"></div>
+        <div class="qr-cap">SCAN TO JOIN RACE — REFERRAL EMBEDDED</div>
+      </div>
+    </div>
+
+    <!-- TX SECTION -->
+    <div class="tx-card">
+      <div class="tx-hdr">
+        <div class="tx-hdr-title">EARNINGS HISTORY</div>
+        <div class="tx-hdr-count" id="tx-count-badge">0 FILLS</div>
+      </div>
+      <div id="tx-list">
+        <div class="tx-empty">No transactions yet.<br>Your earnings appear here<br>as your invitees fill up.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>RACE VIP AGENT PORTAL — READ ONLY</footer>
+</div>
+
+<!-- INVITES MODAL -->
+<div class="modal-overlay" id="inv-modal" onclick="closeInvitesOutside(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">MY RACE ARMY</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="modal-count" id="modal-inv-count">0 invites</div>
+        <button class="modal-close" onclick="closeInvites()">×</button>
+      </div>
+    </div>
+    <div class="modal-body" id="modal-inv-body">
+      <div class="tx-empty">No invites yet.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB='https://zluhwkdrijrklviijuvl.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsdWh3a2RyaWpya2x2aWlqdXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDU0NTksImV4cCI6MjA5NTk4MTQ1OX0.H_Vp_zr7C9bZeewQ4y9AObK7_29maOZ4iHfXFMKcx0w';
+const RATE=0.0025;
+let refLink='', agentId='', qrDone=false, invitesData=[];
+
+async function sb(p){
+  const r=await fetch(SB+'/rest/v1/'+p,{headers:{'apikey':KEY,'Authorization':'Bearer '+KEY}});
+  if(!r.ok)throw new Error(await r.text());
+  return r.json();
+}
+function fmt(n){return Math.round(n).toLocaleString('en-US')}
+function fmtE(n){return (Math.round(n*10)/10).toLocaleString('en-US',{minimumFractionDigits:1})}
+
+async function boot(){
+  const params=new URLSearchParams(window.location.search);
+  agentId=params.get('id');
+  if(!agentId){showErr('No agent ID in URL. Please use the link from RACE admin.');return;}
+  try{
+    const [agents,txs,invites]=await Promise.all([
+      sb('vip_agents?id=eq.'+agentId+'&select=*'),
+      sb('agent_transactions?agent_id=eq.'+agentId+'&order=created_at.desc&select=*'),
+      sb('agent_invites?agent_id=eq.'+agentId+'&order=joined_date.desc&select=*')
+    ]);
+    if(!agents.length){showErr('Agent not found. Contact RACE admin.');return;}
+    const agent=agents[0];
+    invitesData=invites;
+
+    // Header
+    document.getElementById('hdr-name').textContent=agent.name.toUpperCase();
+    document.title=agent.name+' — RACE VIP';
+
+    // Referral link — use the referral_code directly (no double URL)
+    refLink='https://app.getrace.app/join/'+agent.referral_code;
+    document.getElementById('ref-link-txt').textContent=refLink;
+
+    // WhatsApp
+    const waMsg=encodeURIComponent('🚗 Join RACE — the fuel rewards network in Erbil!\n\n✅ Emergency roadside cover\n✅ Cashback every time you fill up\n✅ Exclusive driver network\n\nJoin with my link:\n'+refLink);
+    document.getElementById('wa-btn').href='https://wa.me/?text='+waMsg;
+
+    // Stats
+    const totalSpend=txs.reduce((s,t)=>s+parseFloat(t.amount_spent),0);
+    const totalEarned=totalSpend*RATE;
+    document.getElementById('earn-total').innerHTML=fmtE(totalEarned)+'<sup>IQD</sup>';
+    document.getElementById('earn-desc').innerHTML='<strong>'+txs.length+' transactions</strong> · '+invites.length+' drivers recruited · <strong>'+fmt(totalSpend)+' IQD</strong> total spend';
+    document.getElementById('st-invites').textContent=invites.length;
+    document.getElementById('st-txs').textContent=txs.length;
+    document.getElementById('st-spend').textContent=fmt(totalSpend);
+    document.getElementById('inv-count-badge').textContent=invites.length;
+    document.getElementById('tx-count-badge').textContent=txs.length+' FILLS';
+
+    // TX list
+    const txEl=document.getElementById('tx-list');
+    if(txs.length){
+      txEl.innerHTML=txs.map(t=>`
+        <div class="tx-row">
+          <div>
+            <div class="tx-user">${t.race_username}</div>
+            <div class="tx-date">${t.transaction_date}</div>
+          </div>
+          <div>
+            <div class="tx-spent">${fmt(t.amount_spent)} IQD spent</div>
+            <div class="tx-earn">+${fmtE(parseFloat(t.amount_spent)*RATE)} IQD</div>
+          </div>
+        </div>`).join('');
+    }
+
+    // Invites modal content
+    updateInvitesModal();
+
+    // Show app
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
+
+    // Auto-refresh every 30s
+    setInterval(refresh,30000);
+  }catch(e){showErr('Error loading data: '+e.message);}
+}
+
+async function refresh(){
+  try{
+    const [txs,invites]=await Promise.all([
+      sb('agent_transactions?agent_id=eq.'+agentId+'&order=created_at.desc&select=*'),
+      sb('agent_invites?agent_id=eq.'+agentId+'&order=joined_date.desc&select=*')
+    ]);
+    invitesData=invites;
+    const totalSpend=txs.reduce((s,t)=>s+parseFloat(t.amount_spent),0);
+    const totalEarned=totalSpend*RATE;
+    document.getElementById('earn-total').innerHTML=fmtE(totalEarned)+'<sup>IQD</sup>';
+    document.getElementById('earn-desc').innerHTML='<strong>'+txs.length+' transactions</strong> · '+invites.length+' drivers recruited · <strong>'+fmt(totalSpend)+' IQD</strong> total spend';
+    document.getElementById('st-invites').textContent=invites.length;
+    document.getElementById('st-txs').textContent=txs.length;
+    document.getElementById('st-spend').textContent=fmt(totalSpend);
+    document.getElementById('inv-count-badge').textContent=invites.length;
+    document.getElementById('tx-count-badge').textContent=txs.length+' FILLS';
+    if(txs.length){
+      document.getElementById('tx-list').innerHTML=txs.map(t=>`
+        <div class="tx-row">
+          <div><div class="tx-user">${t.race_username}</div><div class="tx-date">${t.transaction_date}</div></div>
+          <div><div class="tx-spent">${fmt(t.amount_spent)} IQD spent</div><div class="tx-earn">+${fmtE(parseFloat(t.amount_spent)*RATE)} IQD</div></div>
+        </div>`).join('');
+    }
+    updateInvitesModal();
+  }catch(e){}
+}
+
+function updateInvitesModal(){
+  document.getElementById('modal-inv-count').textContent=invitesData.length+' invites';
+  const body=document.getElementById('modal-inv-body');
+  if(!invitesData.length){
+    body.innerHTML='<div class="tx-empty">No invites recorded yet.<br>Share your link to start growing your army.</div>';
+    return;
+  }
+  body.innerHTML=invitesData.map((inv,i)=>`
+    <div class="invite-row">
+      <div>
+        <div class="inv-name">${inv.race_username}</div>
+        <div class="inv-date">Joined ${inv.joined_date}</div>
+      </div>
+      <div class="inv-joined">#${invitesData.length-i}</div>
+    </div>`).join('');
+}
+
+function showErr(msg){
+  document.getElementById('loading').style.display='none';
+  const e=document.getElementById('error');
+  e.style.display='flex';
+  document.getElementById('err-msg').textContent=msg;
+}
+
+function copyRef(){
+  navigator.clipboard.writeText(refLink).then(()=>{
+    const b=document.getElementById('copy-ref-btn');
+    b.textContent='COPIED!';b.classList.add('ok');
+    setTimeout(()=>{b.textContent='COPY';b.classList.remove('ok');},2500);
+  });
+}
+
+function shareLink(){
+  if(navigator.share){
+    navigator.share({title:'Join RACE',text:'🚗 Join RACE — fuel rewards for Erbil drivers!',url:refLink});
+  } else {copyRef();}
+}
+
+let qrOpen=false;
+function toggleQR(){
+  const body=document.getElementById('qr-body'),arrow=document.getElementById('qr-arrow');
+  qrOpen=!qrOpen;
+  body.classList.toggle('open',qrOpen);
+  arrow.style.transform=qrOpen?'rotate(180deg)':'';
+  if(qrOpen&&!qrDone&&refLink){
+    document.getElementById('qr-code').innerHTML='';
+    new QRCode(document.getElementById('qr-code'),{text:refLink,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    qrDone=true;
+  }
+}
+
+function openInvites(){
+  document.getElementById('inv-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeInvites(){
+  document.getElementById('inv-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeInvitesOutside(e){
+  if(e.target===document.getElementById('inv-modal'))closeInvites();
+}
+
+boot();
+</script>
+</body>
+</html>

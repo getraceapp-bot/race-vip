@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>RACE VIP — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --o:#E66A2A;--o2:#ff7a35;--od:rgba(230,106,42,0.13);--og:rgba(230,106,42,0.3);
+  --bg:#080808;--s1:#101010;--s2:#181818;--s3:#222;
+  --b1:#252525;--b2:#333;
+  --txt:#f5f5f5;--dim:#888;
+  --green:#2ecc71;--gd:rgba(46,204,113,0.12);
+  --red:#e74c3c;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(230,106,42,0.07) 0%,transparent 65%);top:-150px;right:-150px;animation:orb 9s ease-in-out infinite}
+.bg::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(230,106,42,0.04) 0%,transparent 65%);bottom:-80px;left:-80px;animation:orb 12s ease-in-out infinite reverse}
+.bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(230,106,42,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(230,106,42,0.03) 1px,transparent 1px);background-size:40px 40px}
+@keyframes orb{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.lbox{width:100%;max-width:400px;background:var(--s1);border:1px solid var(--b1);padding:36px 28px;border-radius:4px;position:relative;overflow:hidden}
+.lbox::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--o),var(--o2),var(--o));background-size:200%;animation:sh 3s linear infinite}
+@keyframes sh{0%{background-position:0%}100%{background-position:200%}}
+.lbox-head{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.lbox-head img{width:48px;height:48px;border-radius:10px}
+.lbox-title{font-size:24px;font-weight:800;letter-spacing:-0.5px}
+.lbox-title span{color:var(--o)}
+.lbox-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-bottom:28px;letter-spacing:1px}
+.pw-wrap{position:relative;margin-bottom:14px}
+.pw-wrap input{width:100%;padding:14px 52px 14px 16px;background:var(--bg);border:1px solid var(--b2);color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:15px;outline:none;border-radius:3px;letter-spacing:2px;transition:border-color .2s}
+.pw-wrap input::placeholder{letter-spacing:0;font-size:13px;color:var(--dim);font-family:'Outfit',sans-serif}
+.pw-wrap input:focus{border-color:var(--o)}
+.pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--dim);cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px;letter-spacing:.5px}
+.btn-login{width:100%;padding:14px;background:var(--o);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:3px;letter-spacing:1px;transition:all .2s}
+.btn-login:hover{background:var(--o2)}
+.btn-login:active{transform:scale(.98)}
+.lerr{margin-top:12px;padding:10px 14px;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);color:var(--red);font-family:'JetBrains Mono',monospace;font-size:11px;border-radius:3px;word-break:break-all;display:none}
+#app{display:none;position:relative;z-index:1}
+.topbar{padding:14px 20px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(8,8,8,.95);backdrop-filter:blur(12px);z-index:100}
+.topbar-l{display:flex;align-items:center;gap:10px}
+.topbar-l img{width:32px;height:32px;border-radius:7px}
+.topbar-title{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.topbar-title span{color:var(--o)}
+.topbar-r{display:flex;align-items:center;gap:8px}
+.pill{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--o);background:var(--od);border:1px solid var(--og);padding:4px 10px;border-radius:20px}
+.btn-logout{background:none;border:1px solid var(--b2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;cursor:pointer;border-radius:20px;transition:all .2s}
+.btn-logout:hover{border-color:var(--red);color:var(--red)}
+.tabs{display:flex;border-bottom:1px solid var(--b1);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tb{flex-shrink:0;padding:13px 18px;font-size:12px;font-weight:600;letter-spacing:.5px;color:var(--dim);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;white-space:nowrap}
+.tb.on{color:var(--o);border-bottom-color:var(--o)}
+.pg{display:none;padding:20px;max-width:800px;margin:0 auto}
+.pg.on{display:block}
+.slbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:12px}
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:4px;padding:20px;margin-bottom:16px}
+.frow{display:grid;gap:10px;margin-bottom:12px}
+.f2{grid-template-columns:1fr 1fr}
+.f3{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:10px;color:var(--dim);font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+.fg input,.fg select{padding:11px 12px;background:var(--bg);border:1px solid var(--b2);color:var(--txt);font-family:'Outfit',sans-serif;font-size:14px;outline:none;border-radius:3px;transition:border-color .2s;width:100%}
+.fg input:focus,.fg select:focus{border-color:var(--o)}
+.fg select{cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.fg select option{background:var(--s1)}
+.btn-add{padding:12px 20px;background:var(--o);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:3px;transition:all .2s;letter-spacing:.5px}
+.btn-add:hover{background:var(--o2)}
+.btn-add:active{transform:scale(.98)}
+.btn-del{padding:6px 11px;background:none;border:1px solid rgba(231,76,60,.4);color:var(--red);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;border-radius:3px;transition:all .2s}
+.btn-del:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.acard{background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:18px;margin-bottom:12px;transition:border-color .2s}
+.acard:hover{border-color:var(--og)}
+.acard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.aname{font-size:17px;font-weight:700;margin-bottom:4px}
+.aref{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--o);background:var(--od);padding:3px 9px;border-radius:20px}
+.aphone{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-top:4px}
+.astats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.astat{background:var(--s2);border-radius:4px;padding:10px;text-align:center}
+.astat-v{font-size:16px;font-weight:800;margin-bottom:2px}
+.astat-v.o{color:var(--o)}
+.astat-v.g{color:var(--green)}
+.astat-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim)}
+.lnk-row{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--og);border-radius:4px;padding:10px 12px}
+.lnk-row code{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--o);flex:1;word-break:break-all;line-height:1.4}
+.cpbtn{flex-shrink:0;padding:6px 12px;background:none;border:1px solid var(--og);color:var(--o);font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;border-radius:3px;transition:all .2s}
+.cpbtn:hover{background:var(--od)}
+.cpbtn.ok{border-color:var(--green);color:var(--green)}
+.ttbl{width:100%;border-collapse:collapse;min-width:460px}
+.ttbl th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--dim);text-align:left;padding:10px 12px;border-bottom:1px solid var(--b1)}
+.ttbl td{padding:11px 12px;border-bottom:1px solid var(--s3);font-size:13px;vertical-align:middle}
+.ttbl tr:last-child td{border-bottom:none}
+.ttbl tr:hover td{background:var(--s2)}
+.tu{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--o)}
+.tg{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green);font-weight:600}
+.td{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)}
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.calc{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green);padding:8px 12px;background:var(--gd);border:1px solid rgba(46,204,113,.3);border-radius:3px;margin-top:8px;display:none}
+.ovgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.ovc{background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:18px}
+.ovv{font-size:26px;font-weight:800;margin-bottom:4px}
+.ovv.o{color:var(--o)}
+.ovv.g{color:var(--green)}
+.ovl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:1px}
+.empty{padding:40px 20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--s1);border:1px solid var(--green);color:var(--green);font-family:'JetBrains Mono',monospace;font-size:12px;padding:11px 20px;z-index:999;border-radius:4px;transition:transform .3s;white-space:nowrap;pointer-events:none}
+.toast.err{border-color:var(--red);color:var(--red)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.filt{display:flex;gap:8px;margin-bottom:12px}
+.filt select{padding:7px 24px 7px 10px;background:var(--s2);border:1px solid var(--b1);color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:11px;border-radius:3px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
+@media(max-width:600px){.f2,.f3{grid-template-columns:1fr}.ovgrid{grid-template-columns:1fr 1fr}.pg{padding:14px}.card{padding:14px}}
+.rbadge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#E66A2A;color:#fff;font-weight:900;font-size:18px;border-radius:8px;flex-shrink:0;font-family:'Outfit',sans-serif;}
+</style>
+</head>
+<body>
+<div class="bg"><div class="bg-grid"></div></div>
+
+<div id="login">
+  <div class="lbox">
+    <div class="lbox-head">
+      <span class="rbadge">R</span>
+      <div class="lbox-title">RACE <span>VIP</span></div>
+    </div>
+    <div class="lbox-sub">// ADMIN ACCESS — RESTRICTED</div>
+    <div class="pw-wrap">
+      <input type="password" id="pw" placeholder="Enter admin password" autocomplete="new-password" spellcheck="false">
+      <button class="pw-toggle" type="button" id="pw-eye" onclick="pwToggle()">SHOW</button>
+    </div>
+    <button class="btn-login" id="login-btn" onclick="doLogin()">ENTER ADMIN</button>
+    <div class="lerr" id="lerr"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-l">
+      <span class="rbadge">R</span>
+      <div class="topbar-title">RACE <span>VIP</span> <span style="color:var(--dim);font-weight:400;font-size:12px">/ Admin</span></div>
+    </div>
+    <div class="topbar-r">
+      <div class="pill" id="agents-pill">0 agents</div>
+      <button class="btn-logout" onclick="doLogout()">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tb on" onclick="goTab('agents',this)">VIP AGENTS</button>
+    <button class="tb" onclick="goTab('txs',this)">TRANSACTIONS</button>
+    <button class="tb" onclick="goTab('invites',this)">INVITES</button>
+    <button class="tb" onclick="goTab('overview',this)">OVERVIEW</button>
+  </div>
+
+  <!-- AGENTS -->
+  <div class="pg on" id="pg-agents">
+    <div class="slbl">// CREATE NEW VIP AGENT</div>
+    <div class="card">
+      <div class="frow f3">
+        <div class="fg"><label>AGENT NAME</label><input type="text" id="nn" placeholder="e.g. Ahmed Hassan"></div>
+        <div class="fg"><label>PHONE</label><input type="text" id="np" placeholder="e.g. 0750 123 4567"></div>
+        <div class="fg"><label>REFERRAL CODE</label><input type="text" id="nr" placeholder="e.g. RC177073597311512"></div>
+      </div>
+      <button class="btn-add" onclick="createAgent()">+ CREATE AGENT</button>
+    </div>
+    <div class="slbl">// AGENTS</div>
+    <div id="alist"><div class="empty">Loading...</div></div>
+  </div>
+
+  <!-- TRANSACTIONS -->
+  <div class="pg" id="pg-txs">
+    <div class="slbl">// ADD TRANSACTION</div>
+    <div class="card">
+      <div class="frow f2">
+        <div class="fg"><label>VIP AGENT</label><select id="tx-ag"><option value="">Select agent...</option></select></div>
+        <div class="fg"><label>RACE USERNAME (invitee)</label><input type="text" id="tx-u" placeholder="e.g. UserB61F11" oninput="calcPrev()"></div>
+        <div class="fg"><label>AMOUNT SPENT (IQD)</label><input type="number" id="tx-am" placeholder="e.g. 50000" oninput="calcPrev()"></div>
+        <div class="fg"><label>DATE</label><input type="date" id="tx-dt"></div>
+      </div>
+      <div class="calc" id="calc"></div>
+      <div style="margin-top:12px"><button class="btn-add" onclick="addTx()">+ ADD TRANSACTION</button></div>
+    </div>
+    <div class="slbl">// RECENT TRANSACTIONS</div>
+    <div class="filt"><select id="tx-filt" onchange="loadTxs()"><option value="">All agents</option></select></div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="tscroll"><div id="txlist"><div class="empty">Loading...</div></div></div></div>
+  </div>
+
+  <!-- INVITES -->
+  <div class="pg" id="pg-invites">
+    <div class="slbl">// ADD INVITE</div>
+    <div class="card">
+      <div class="frow f3">
+        <div class="fg"><label>VIP AGENT</label><select id="inv-ag"><option value="">Select agent...</option></select></div>
+        <div class="fg"><label>RACE USERNAME</label><input type="text" id="inv-u" placeholder="e.g. UserB61F11"></div>
+        <div class="fg"><label>JOINED DATE</label><input type="date" id="inv-dt"></div>
+      </div>
+      <button class="btn-add" onclick="addInvite()">+ ADD INVITE</button>
+    </div>
+    <div class="slbl">// INVITES LIST</div>
+    <div class="filt"><select id="inv-filt" onchange="loadInvites()"><option value="">All agents</option></select></div>
+    <div class="card" style="padding:0;overflow:hidden"><div class="tscroll"><div id="invlist"><div class="empty">Loading...</div></div></div></div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="pg" id="pg-overview">
+    <div class="ovgrid">
+      <div class="ovc"><div class="ovv o" id="ov-a">—</div><div class="ovl">VIP AGENTS</div></div>
+      <div class="ovc"><div class="ovv" id="ov-i">—</div><div class="ovl">TOTAL INVITES</div></div>
+      <div class="ovc"><div class="ovv" id="ov-t">—</div><div class="ovl">TRANSACTIONS</div></div>
+      <div class="ovc"><div class="ovv g" id="ov-e">—</div><div class="ovl">TOTAL EARNED IQD</div></div>
+    </div>
+    <div class="slbl">// PER-AGENT</div>
+    <div id="ovlist"><div class="empty">Loading...</div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SB = 'https://zluhwkdrijrklviijuvl.supabase.co';
+var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsdWh3a2RyaWpya2x2aWlqdXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDU0NTksImV4cCI6MjA5NTk4MTQ1OX0.H_Vp_zr7C9bZeewQ4y9AObK7_29maOZ4iHfXFMKcx0w';
+var PASS = 'race2024admin';
+var RATE = 0.0025;
+var agents = [];
+
+function sbFetch(path, method, body) {
+  var opts = {
+    method: method || 'GET',
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  return fetch(SB + '/rest/v1/' + path, opts).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    return r.text().then(function(t) { return t ? JSON.parse(t) : []; });
+  });
+}
+
+function fmt(n) { return Math.round(n).toLocaleString('en-US'); }
+function fmtE(n) { return (Math.round(n * 10) / 10).toLocaleString('en-US', {minimumFractionDigits:1}); }
+
+function showToast(msg, isErr) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  setTimeout(function() { t.className = 'toast'; }, 3000);
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────────────────
+function pwToggle() {
+  var inp = document.getElementById('pw');
+  var btn = document.getElementById('pw-eye');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    btn.textContent = 'HIDE';
+  } else {
+    inp.type = 'password';
+    btn.textContent = 'SHOW';
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && document.getElementById('login').style.display !== 'none') {
+    doLogin();
+  }
+});
+
+function doLogin() {
+  var inp = document.getElementById('pw');
+  var err = document.getElementById('lerr');
+  var p = inp.value.trim();
+  if (p === PASS) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    boot();
+  } else {
+    err.style.display = 'block';
+    err.textContent = 'Wrong password. You typed: [' + p + ']  Correct is: race2024admin';
+    inp.focus();
+    inp.select();
+  }
+}
+
+function doLogout() {
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('pw').value = '';
+  document.getElementById('lerr').style.display = 'none';
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function goTab(id, el) {
+  document.querySelectorAll('.tb').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelectorAll('.pg').forEach(function(p) { p.classList.remove('on'); });
+  el.classList.add('on');
+  document.getElementById('pg-' + id).classList.add('on');
+  if (id === 'txs') { populateSels(); loadTxs(); }
+  if (id === 'invites') { populateSels(); loadInvites(); }
+  if (id === 'overview') { loadOverview(); }
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────
+function boot() {
+  document.getElementById('tx-dt').valueAsDate = new Date();
+  document.getElementById('inv-dt').valueAsDate = new Date();
+  loadAgents();
+}
+
+// ── AGENTS ────────────────────────────────────────────────────────────────
+function loadAgents() {
+  var el = document.getElementById('alist');
+  el.innerHTML = '<div class="empty">Loading...</div>';
+  Promise.all([
+    sbFetch('vip_agents?order=created_at.desc&select=*'),
+    sbFetch('agent_transactions?select=agent_id,amount_spent'),
+    sbFetch('agent_invites?select=agent_id')
+  ]).then(function(results) {
+    agents = results[0];
+    var txAll = results[1];
+    var invAll = results[2];
+    document.getElementById('agents-pill').textContent = agents.length + ' agents';
+    if (!agents.length) { el.innerHTML = '<div class="empty">No agents yet.</div>'; return; }
+    var txMap = {}, invMap = {};
+    txAll.forEach(function(t) {
+      if (!txMap[t.agent_id]) txMap[t.agent_id] = {c:0, tot:0};
+      txMap[t.agent_id].c++;
+      txMap[t.agent_id].tot += parseFloat(t.amount_spent);
+    });
+    invAll.forEach(function(i) { invMap[i.agent_id] = (invMap[i.agent_id] || 0) + 1; });
+    var html = '';
+    agents.forEach(function(a) {
+      var tx = txMap[a.id] || {c:0, tot:0};
+      var inv = invMap[a.id] || 0;
+      var earned = tx.tot * RATE;
+      var baseURL = 'https://getraceapp-bot.github.io/race-vip/';
+      var agentURL = baseURL + 'race-vip-agent.html?id=' + a.id;
+      html += '<div class="acard">';
+      html += '<div class="acard-top">';
+      html += '<div><div class="aname">' + a.name + '</div>';
+      html += '<div class="aref">' + a.referral_code + '</div>';
+      if (a.phone) html += '<div class="aphone">' + a.phone + '</div>';
+      html += '</div>';
+      html += '<button class="btn-del" data-id="' + a.id + '" data-name="' + a.name.replace(/"/g, '&quot;') + '" onclick="delAgent(this)">DELETE</button>';
+      html += '</div>';
+      html += '<div class="astats">';
+      html += '<div class="astat"><div class="astat-v o">' + inv + '</div><div class="astat-l">INVITES</div></div>';
+      html += '<div class="astat"><div class="astat-v">' + tx.c + '</div><div class="astat-l">FILLS</div></div>';
+      html += '<div class="astat"><div class="astat-v g">' + fmtE(earned) + '</div><div class="astat-l">EARNED IQD</div></div>';
+      html += '</div>';
+      html += '<div class="lnk-row"><code>' + agentURL + '</code>';
+      html += '<button class="cpbtn" data-url="' + agentURL + '" onclick="copyLink(this)">COPY</button></div>';
+      html += '</div>';
+    });
+    el.innerHTML = html;
+  }).catch(function(e) { el.innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; });
+}
+
+function createAgent() {
+  var name = document.getElementById('nn').value.trim();
+  var phone = document.getElementById('np').value.trim();
+  var ref = document.getElementById('nr').value.trim();
+  if (!name || !ref) { showToast('Name and referral code required', true); return; }
+  sbFetch('vip_agents', 'POST', {name: name, phone: phone || null, referral_code: ref})
+    .then(function() {
+      document.getElementById('nn').value = '';
+      document.getElementById('np').value = '';
+      document.getElementById('nr').value = '';
+      showToast('Agent created');
+      loadAgents();
+    })
+    .catch(function(e) { showToast(e.message.indexOf('unique') > -1 ? 'Referral code already exists' : 'Error: ' + e.message, true); });
+}
+
+function delAgent(btn) {
+  var id = btn.getAttribute('data-id');
+  var name = btn.getAttribute('data-name');
+  if (!confirm('Delete agent "' + name + '"? All their data will be removed.')) return;
+  sbFetch('vip_agents?id=eq.' + id, 'DELETE').then(function() { showToast('Deleted'); loadAgents(); })
+    .catch(function() { showToast('Error deleting', true); });
+}
+
+function copyLink(btn) {
+  var url = btn.getAttribute('data-url');
+  navigator.clipboard.writeText(url).then(function() {
+    btn.textContent = 'COPIED!';
+    btn.classList.add('ok');
+    setTimeout(function() { btn.textContent = 'COPY'; btn.classList.remove('ok'); }, 2500);
+  });
+}
+
+// ── SELECTS ───────────────────────────────────────────────────────────────
+function populateSels() {
+  var opts = '<option value="">All agents</option>' + agents.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+  var txOpts = '<option value="">Select agent...</option>' + agents.map(function(a) { return '<option value="' + a.id + '">' + a.name + '</option>'; }).join('');
+  document.getElementById('tx-ag').innerHTML = txOpts;
+  document.getElementById('inv-ag').innerHTML = txOpts;
+  document.getElementById('tx-filt').innerHTML = opts;
+  document.getElementById('inv-filt').innerHTML = opts;
+}
+
+// ── CALC ──────────────────────────────────────────────────────────────────
+function calcPrev() {
+  var am = parseFloat(document.getElementById('tx-am').value) || 0;
+  var u = document.getElementById('tx-u').value.trim();
+  var el = document.getElementById('calc');
+  if (am > 0 && u) {
+    el.style.display = 'block';
+    el.textContent = '→ ' + u + ' spent ' + fmt(am) + ' IQD — agent earns ' + fmtE(am * RATE) + ' IQD';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+// ── TRANSACTIONS ──────────────────────────────────────────────────────────
+function addTx() {
+  var aid = document.getElementById('tx-ag').value;
+  var user = document.getElementById('tx-u').value.trim();
+  var amount = parseFloat(document.getElementById('tx-am').value);
+  var date = document.getElementById('tx-dt').value;
+  if (!aid || !user || !amount || !date) { showToast('All fields required', true); return; }
+  sbFetch('agent_transactions', 'POST', {agent_id: aid, race_username: user, amount_spent: amount, transaction_date: date})
+    .then(function() {
+      document.getElementById('tx-u').value = '';
+      document.getElementById('tx-am').value = '';
+      document.getElementById('calc').style.display = 'none';
+      document.getElementById('tx-dt').valueAsDate = new Date();
+      showToast('Transaction added — agent screen updated live');
+      loadTxs();
+      loadAgents();
+    })
+    .catch(function(e) { showToast('Error: ' + e.message, true); });
+}
+
+function loadTxs() {
+  var el = document.getElementById('txlist');
+  var filter = document.getElementById('tx-filt').value;
+  var q = 'agent_transactions?order=created_at.desc&select=*,vip_agents(name)&limit=200';
+  if (filter) q += '&agent_id=eq.' + filter;
+  sbFetch(q).then(function(data) {
+    if (!data.length) { el.innerHTML = '<div class="empty">No transactions yet.</div>'; return; }
+    var h = '<table class="ttbl"><thead><tr><th>AGENT</th><th>RACE USER</th><th>DATE</th><th>SPENT IQD</th><th>EARNED IQD</th><th></th></tr></thead><tbody>';
+    data.forEach(function(t) {
+      h += '<tr>';
+      h += '<td style="font-size:12px">' + (t.vip_agents ? t.vip_agents.name : '—') + '</td>';
+      h += '<td class="tu">' + t.race_username + '</td>';
+      h += '<td class="td">' + t.transaction_date + '</td>';
+      h += '<td>' + fmt(t.amount_spent) + '</td>';
+      h += '<td class="tg">+' + fmtE(t.amount_spent * RATE) + '</td>';
+      h += '<td><button class="btn-del" data-id="' + t.id + '" onclick="delTx(this)">×</button></td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+    el.innerHTML = h;
+  }).catch(function(e) { el.innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; });
+}
+
+function delTx(btn) {
+  if (!confirm('Delete this transaction?')) return;
+  var id = btn.getAttribute('data-id');
+  sbFetch('agent_transactions?id=eq.' + id, 'DELETE').then(function() { showToast('Deleted'); loadTxs(); loadAgents(); })
+    .catch(function() { showToast('Error', true); });
+}
+
+// ── INVITES ───────────────────────────────────────────────────────────────
+function addInvite() {
+  var aid = document.getElementById('inv-ag').value;
+  var user = document.getElementById('inv-u').value.trim();
+  var date = document.getElementById('inv-dt').value;
+  if (!aid || !user || !date) { showToast('All fields required', true); return; }
+  sbFetch('agent_invites', 'POST', {agent_id: aid, race_username: user, joined_date: date})
+    .then(function() {
+      document.getElementById('inv-u').value = '';
+      document.getElementById('inv-dt').valueAsDate = new Date();
+      showToast('Invite added');
+      loadInvites();
+      loadAgents();
+    })
+    .catch(function(e) { showToast('Error: ' + e.message, true); });
+}
+
+function loadInvites() {
+  var el = document.getElementById('invlist');
+  var filter = document.getElementById('inv-filt').value;
+  var q = 'agent_invites?order=created_at.desc&select=*,vip_agents(name)&limit=200';
+  if (filter) q += '&agent_id=eq.' + filter;
+  sbFetch(q).then(function(data) {
+    if (!data.length) { el.innerHTML = '<div class="empty">No invites yet.</div>'; return; }
+    var h = '<table class="ttbl"><thead><tr><th>AGENT</th><th>RACE USERNAME</th><th>JOINED DATE</th><th></th></tr></thead><tbody>';
+    data.forEach(function(i) {
+      h += '<tr>';
+      h += '<td style="font-size:12px">' + (i.vip_agents ? i.vip_agents.name : '—') + '</td>';
+      h += '<td class="tu">' + i.race_username + '</td>';
+      h += '<td class="td">' + i.joined_date + '</td>';
+      h += '<td><button class="btn-del" data-id="' + i.id + '" onclick="delInvite(this)">×</button></td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+    el.innerHTML = h;
+  }).catch(function(e) { el.innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; });
+}
+
+function delInvite(btn) {
+  if (!confirm('Remove this invite?')) return;
+  var id = btn.getAttribute('data-id');
+  sbFetch('agent_invites?id=eq.' + id, 'DELETE').then(function() { showToast('Removed'); loadInvites(); loadAgents(); })
+    .catch(function() { showToast('Error', true); });
+}
+
+// ── OVERVIEW ──────────────────────────────────────────────────────────────
+function loadOverview() {
+  Promise.all([
+    sbFetch('vip_agents?select=*'),
+    sbFetch('agent_transactions?select=agent_id,amount_spent'),
+    sbFetch('agent_invites?select=agent_id')
+  ]).then(function(results) {
+    var ags = results[0], txs = results[1], invs = results[2];
+    var totalSpend = 0;
+    var txMap = {}, invMap = {};
+    txs.forEach(function(t) {
+      if (!txMap[t.agent_id]) txMap[t.agent_id] = {c:0, tot:0};
+      txMap[t.agent_id].c++;
+      txMap[t.agent_id].tot += parseFloat(t.amount_spent);
+      totalSpend += parseFloat(t.amount_spent);
+    });
+    invs.forEach(function(i) { invMap[i.agent_id] = (invMap[i.agent_id] || 0) + 1; });
+    document.getElementById('ov-a').textContent = ags.length;
+    document.getElementById('ov-i').textContent = invs.length;
+    document.getElementById('ov-t').textContent = txs.length;
+    document.getElementById('ov-e').textContent = fmtE(totalSpend * RATE);
+    var h = '';
+    ags.forEach(function(a) {
+      var tx = txMap[a.id] || {c:0, tot:0};
+      var inv = invMap[a.id] || 0;
+      h += '<div class="acard"><div class="acard-top"><div><div class="aname">' + a.name + '</div>';
+      h += '<div class="aref">' + a.referral_code + '</div></div></div>';
+      h += '<div class="astats">';
+      h += '<div class="astat"><div class="astat-v o">' + inv + '</div><div class="astat-l">INVITES</div></div>';
+      h += '<div class="astat"><div class="astat-v">' + tx.c + '</div><div class="astat-l">FILLS</div></div>';
+      h += '<div class="astat"><div class="astat-v g">' + fmtE(tx.tot * RATE) + '</div><div class="astat-l">EARNED IQD</div></div>';
+      h += '</div></div>';
+    });
+    document.getElementById('ovlist').innerHTML = h || '<div class="empty">No data</div>';
+  }).catch(function(e) { document.getElementById('ovlist').innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; });
+}
+</script>
+</body>
+</html>
