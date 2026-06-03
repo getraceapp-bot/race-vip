@@ -310,6 +310,14 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
       <div class="stat-card"><div class="stat-v" id="st-txs">0</div><div class="stat-l">FILLS</div></div>
       <div class="stat-card"><div class="stat-v g" id="st-spend">0</div><div class="stat-l">TOTAL IQD</div></div>
     </div>
+    <!-- BALANCE & WITHDRAW -->
+    <div class="balance-card" id="balance-section">
+      <div class="bal-lbl">// AVAILABLE BALANCE</div>
+      <div class="bal-amount" id="bal-amount">0<span>IQD</span></div>
+      <div class="bal-sub" id="bal-sub">Earnings minus confirmed withdrawals</div>
+      <div class="pending-badge" id="pending-badge"></div>
+      <button class="btn-withdraw" id="btn-withdraw" onclick="openWithdraw()">WITHDRAW</button>
+    </div>
 
     <!-- INVITES BUTTON -->
     <button class="invites-btn" onclick="openInvites()">
