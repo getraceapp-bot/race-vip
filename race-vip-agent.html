@@ -245,32 +245,35 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
 }
 .rbadge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#E66A2A;color:#fff;font-weight:900;font-size:18px;border-radius:8px;flex-shrink:0;font-family:'Outfit',sans-serif;}
 
-.balance-card{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:22px;position:relative;overflow:hidden}
-.balance-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),#27ae60)}
-.bal-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:8px}
-.bal-amount{font-size:40px;font-weight:900;letter-spacing:-2px;color:var(--green);margin-bottom:4px}
-.bal-amount span{font-size:16px;font-weight:500;color:var(--dim);letter-spacing:0;margin-left:4px}
-.bal-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
-.btn-withdraw{width:100%;margin-top:16px;padding:14px;background:var(--green);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;letter-spacing:.5px}
-.btn-withdraw:hover{opacity:.85}
-.btn-withdraw:active{transform:scale(.98)}
-.btn-withdraw:disabled{background:var(--b2);color:var(--dim);cursor:not-allowed;transform:none}
-.pending-badge{margin-top:12px;padding:10px 14px;background:rgba(230,106,42,0.1);border:1px solid rgba(230,106,42,0.3);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--o);display:none}
-.wd-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
-.wd-modal-bg.open{display:flex}
-.wd-sheet{background:var(--s1);border:1px solid var(--b1);border-radius:16px 16px 0 0;width:100%;max-width:640px;padding:28px 24px 36px;animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
-.wd-sheet-title{font-size:18px;font-weight:800;margin-bottom:6px}
-.wd-sheet-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-bottom:20px}
-.wd-inp-wrap{position:relative;margin-bottom:14px}
-.wd-inp-wrap input{width:100%;padding:14px 70px 14px 16px;background:var(--bg);border:1px solid var(--b2);color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:18px;outline:none;border-radius:6px;letter-spacing:1px;transition:border-color .2s}
-.wd-inp-wrap input:focus{border-color:var(--green)}
-.wd-inp-suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+
 .wd-max-btn{width:100%;padding:10px;background:none;border:1px dashed var(--b2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;border-radius:6px;margin-bottom:14px;transition:all .2s}
 .wd-max-btn:hover{border-color:var(--green);color:var(--green)}
 .btn-request{width:100%;padding:15px;background:var(--green);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;margin-bottom:10px}
 .btn-request:hover{opacity:.85}
 .btn-cancel-wd{width:100%;padding:12px;background:none;border:1px solid var(--b2);color:var(--dim);font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;border-radius:6px;transition:all .2s}
 .btn-cancel-wd:hover{border-color:var(--red);color:var(--red)}
+
+.wd-trigger-btn{padding:10px 18px;background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.4);color:#2ecc71;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.wd-trigger-btn:hover{background:rgba(46,204,113,0.25);border-color:#2ecc71}
+.wd-trigger-btn:disabled{background:rgba(255,255,255,0.05);border-color:#333;color:#555;cursor:not-allowed}
+.wd-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;backdrop-filter:blur(8px);align-items:flex-end;justify-content:center}
+.wd-modal-bg.open{display:flex}
+.wd-sheet{background:#111;border:1px solid #2a2a2a;border-radius:16px 16px 0 0;width:100%;max-width:640px;padding:28px 24px 40px;animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
+.wd-handle{width:40px;height:4px;background:#333;border-radius:2px;margin:0 auto 24px}
+.wd-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.wd-avail{font-family:'JetBrains Mono',monospace;font-size:12px;color:#888;margin-bottom:24px}
+.wd-avail strong{color:#2ecc71}
+.wd-inp-wrap{position:relative;margin-bottom:12px}
+.wd-inp-wrap input{width:100%;padding:16px 60px 16px 16px;background:#080808;border:1px solid #333;color:#f5f5f5;font-family:'JetBrains Mono',monospace;font-size:20px;outline:none;border-radius:8px;transition:border-color .2s}
+.wd-inp-wrap input:focus{border-color:#2ecc71}
+.wd-inp-suffix{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:12px;color:#666}
+.wd-full-btn{width:100%;padding:11px;background:none;border:1px dashed #333;color:#666;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;border-radius:6px;margin-bottom:16px;transition:all .2s}
+.wd-full-btn:hover{border-color:#2ecc71;color:#2ecc71}
+.wd-submit-btn{width:100%;padding:16px;background:#2ecc71;border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:8px;margin-bottom:10px;transition:all .2s}
+.wd-submit-btn:hover{opacity:.88}
+.wd-submit-btn:disabled{background:#222;color:#555;cursor:not-allowed}
+.wd-cancel-btn{width:100%;padding:13px;background:none;border:1px solid #2a2a2a;color:#666;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;border-radius:8px;transition:all .2s}
+.wd-cancel-btn:hover{border-color:#e74c3c;color:#e74c3c}
 </style>
 </head>
 <body>
@@ -300,8 +303,12 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
     <!-- EARNINGS -->
     <div class="earn-hero">
       <div class="earn-lbl">// YOUR TOTAL EARNINGS</div>
-      <div class="earn-num" id="earn-total">0<sup>IQD</sup></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div class="earn-num" id="earn-total">0<sup>IQD</sup></div>
+        <button class="wd-trigger-btn" id="wd-trigger-btn" onclick="openWithdraw()">WITHDRAW</button>
+      </div>
       <div class="earn-desc" id="earn-desc">Loading your data...</div>
+      <div class="pending-badge" id="pending-badge" style="display:none;margin-top:10px;padding:8px 12px;background:rgba(230,106,42,0.12);border:1px solid rgba(230,106,42,0.3);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--o)"></div>
     </div>
 
     <!-- STATS -->
@@ -309,14 +316,6 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
       <div class="stat-card"><div class="stat-v o" id="st-invites">0</div><div class="stat-l">INVITES</div></div>
       <div class="stat-card"><div class="stat-v" id="st-txs">0</div><div class="stat-l">FILLS</div></div>
       <div class="stat-card"><div class="stat-v g" id="st-spend">0</div><div class="stat-l">TOTAL IQD</div></div>
-    </div>
-    <!-- BALANCE & WITHDRAW -->
-    <div class="balance-card" id="balance-section">
-      <div class="bal-lbl">// AVAILABLE BALANCE</div>
-      <div class="bal-amount" id="bal-amount">0<span>IQD</span></div>
-      <div class="bal-sub" id="bal-sub">Earnings minus confirmed withdrawals</div>
-      <div class="pending-badge" id="pending-badge"></div>
-      <button class="btn-withdraw" id="btn-withdraw" onclick="openWithdraw()">WITHDRAW</button>
     </div>
 
     <!-- INVITES BUTTON -->
@@ -389,286 +388,217 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
     </div>
   </div>
 </div>
-
 <script>
-const SB='https://zluhwkdrijrklviijuvl.supabase.co';
-const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsdWh3a2RyaWpya2x2aWlqdXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDU0NTksImV4cCI6MjA5NTk4MTQ1OX0.H_Vp_zr7C9bZeewQ4y9AObK7_29maOZ4iHfXFMKcx0w';
-const RATE=0.0025;
-let refLink='', agentId='', qrDone=false, invitesData=[];
+var SB='https://zluhwkdrijrklviijuvl.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsdWh3a2RyaWpya2x2aWlqdXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MDU0NTksImV4cCI6MjA5NTk4MTQ1OX0.H_Vp_zr7C9bZeewQ4y9AObK7_29maOZ4iHfXFMKcx0w';
+var RATE=0.0025;
+var refLink='',agentId='',qrDone=false,qrOpen=false,invitesCache=[],currentBalance=0,hasPending=false;
 
-async function sb(p){
-  const r=await fetch(SB+'/rest/v1/'+p,{headers:{'apikey':KEY,'Authorization':'Bearer '+KEY}});
-  if(!r.ok)throw new Error(await r.text());
-  return r.json();
+function sbGet(p){
+  return fetch(SB+'/rest/v1/'+p,{
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY}
+  }).then(function(r){
+    if(!r.ok)return r.text().then(function(t){throw new Error(t);});
+    return r.json();
+  });
 }
-function fmt(n){return Math.round(n).toLocaleString('en-US')}
-function fmtE(n){return (Math.round(n*10)/10).toLocaleString('en-US',{minimumFractionDigits:1})}
+function sbPost(p,body){
+  return fetch(SB+'/rest/v1/'+p,{
+    method:'POST',
+    headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+    body:JSON.stringify(body)
+  }).then(function(r){
+    if(!r.ok)return r.text().then(function(t){throw new Error(t);});
+    return r.json();
+  });
+}
+function fmt(n){return Math.round(n).toLocaleString('en-US');}
+function fmtE(n){return (Math.round(n*10)/10).toLocaleString('en-US',{minimumFractionDigits:1});}
+function showErr(msg){
+  document.getElementById('loading').style.display='none';
+  var e=document.getElementById('errscrn');e.style.display='flex';
+  document.getElementById('errmsg').textContent=msg;
+}
 
-async function boot(){
-  const params=new URLSearchParams(window.location.search);
+function boot(){
+  var params=new URLSearchParams(window.location.search);
   agentId=params.get('id');
-  if(!agentId){showErr('No agent ID in URL. Please use the link from RACE admin.');return;}
-  try{
-    const [agents,txs,invites]=await Promise.all([
-      sb('vip_agents?id=eq.'+agentId+'&select=*'),
-      sb('agent_transactions?agent_id=eq.'+agentId+'&order=created_at.desc&select=*'),
-      sb('agent_invites?agent_id=eq.'+agentId+'&order=joined_date.desc&select=*')
-    ]);
-    if(!agents.length){showErr('Agent not found. Contact RACE admin.');return;}
-    const agent=agents[0];
-    invitesData=invites;
+  if(!agentId){showErr('No agent ID. Use the link from RACE admin.');return;}
 
-    // Header
+  Promise.all([
+    sbGet('vip_agents?id=eq.'+agentId+'&select=*'),
+    sbGet('agent_transactions?agent_id=eq.'+agentId+'&order=created_at.desc&select=*'),
+    sbGet('agent_invites?agent_id=eq.'+agentId+'&order=joined_date.desc&select=*'),
+    sbGet('agent_withdrawals?agent_id=eq.'+agentId+'&select=*')
+  ]).then(function(res){
+    var agents=res[0],txs=res[1],invites=res[2],withdrawals=res[3];
+    if(!agents.length){showErr('Agent not found. Contact RACE admin.');return;}
+    var agent=agents[0];
+    invitesCache=invites;
+
     document.getElementById('hdr-name').textContent=agent.name.toUpperCase();
     document.title=agent.name+' — RACE VIP';
 
-    // Referral link — use the referral_code directly (no double URL)
     refLink='https://app.getrace.app/join/'+agent.referral_code;
     document.getElementById('ref-link-txt').textContent=refLink;
 
-    // WhatsApp
-    const waMsg=encodeURIComponent('🚗 Join RACE — the fuel rewards network in Erbil!\n\n✅ Emergency roadside cover\n✅ Cashback every time you fill up\n✅ Exclusive driver network\n\nJoin with my link:\n'+refLink);
+    var waMsg=encodeURIComponent('Join RACE — fuel rewards in Erbil!\n\nEmergency roadside cover + cashback every fill up.\n\nJoin: '+refLink);
     document.getElementById('wa-btn').href='https://wa.me/?text='+waMsg;
 
-    // Stats
-    const totalSpend=txs.reduce((s,t)=>s+parseFloat(t.amount_spent),0);
-    const totalEarned=totalSpend*RATE;
-    document.getElementById('earn-total').innerHTML=fmtE(totalEarned)+'<sup>IQD</sup>';
-    document.getElementById('earn-desc').innerHTML='<strong>'+txs.length+' transactions</strong> · '+invites.length+' drivers recruited · <strong>'+fmt(totalSpend)+' IQD</strong> total spend';
-    document.getElementById('st-invites').textContent=invites.length;
-    document.getElementById('st-txs').textContent=txs.length;
-    document.getElementById('st-spend').textContent=fmt(totalSpend);
-    document.getElementById('inv-count-badge').textContent=invites.length;
-    document.getElementById('tx-count-badge').textContent=txs.length+' FILLS';
+    renderAll(txs,invites,withdrawals);
 
-    // TX list
-    const txEl=document.getElementById('tx-list');
-    if(txs.length){
-      txEl.innerHTML=txs.map(t=>`
-        <div class="tx-row">
-          <div>
-            <div class="tx-user">${t.race_username}</div>
-            <div class="tx-date">${t.transaction_date}</div>
-          </div>
-          <div>
-            <div class="tx-spent">${fmt(t.amount_spent)} IQD spent</div>
-            <div class="tx-earn">+${fmtE(parseFloat(t.amount_spent)*RATE)} IQD</div>
-          </div>
-        </div>`).join('');
-    }
-
-    // Invites modal content
-    updateInvitesModal();
-
-    // Show app
     document.getElementById('loading').style.display='none';
     document.getElementById('app').style.display='block';
 
-    // Auto-refresh every 30s
-    setInterval(refresh,30000);
-  }catch(e){showErr('Error loading data: '+e.message);}
+    setInterval(function(){refresh();},30000);
+  }).catch(function(e){showErr('Error: '+e.message);});
 }
 
-async function refresh(){
-  try{
-    const [txs,invites]=await Promise.all([
-      sb('agent_transactions?agent_id=eq.'+agentId+'&order=created_at.desc&select=*'),
-      sb('agent_invites?agent_id=eq.'+agentId+'&order=joined_date.desc&select=*')
-    ]);
-    invitesData=invites;
-    const totalSpend=txs.reduce((s,t)=>s+parseFloat(t.amount_spent),0);
-    const totalEarned=totalSpend*RATE;
-    document.getElementById('earn-total').innerHTML=fmtE(totalEarned)+'<sup>IQD</sup>';
-    document.getElementById('earn-desc').innerHTML='<strong>'+txs.length+' transactions</strong> · '+invites.length+' drivers recruited · <strong>'+fmt(totalSpend)+' IQD</strong> total spend';
-    document.getElementById('st-invites').textContent=invites.length;
-    document.getElementById('st-txs').textContent=txs.length;
-    document.getElementById('st-spend').textContent=fmt(totalSpend);
-    document.getElementById('inv-count-badge').textContent=invites.length;
-    document.getElementById('tx-count-badge').textContent=txs.length+' FILLS';
-    if(txs.length){
-      document.getElementById('tx-list').innerHTML=txs.map(t=>`
-        <div class="tx-row">
-          <div><div class="tx-user">${t.race_username}</div><div class="tx-date">${t.transaction_date}</div></div>
-          <div><div class="tx-spent">${fmt(t.amount_spent)} IQD spent</div><div class="tx-earn">+${fmtE(parseFloat(t.amount_spent)*RATE)} IQD</div></div>
-        </div>`).join('');
-    }
-    updateInvitesModal();
-  }catch(e){}
-}
+function renderAll(txs,invites,withdrawals){
+  var totalSpend=txs.reduce(function(s,t){return s+parseFloat(t.amount_spent);},0);
+  var totalEarned=totalSpend*RATE;
+  var totalWithdrawn=withdrawals.filter(function(w){return w.status==='confirmed';})
+    .reduce(function(s,w){return s+parseFloat(w.amount);},0);
+  currentBalance=Math.max(0,totalEarned-totalWithdrawn);
+  var pending=withdrawals.filter(function(w){return w.status==='pending';});
+  hasPending=pending.length>0;
 
-function updateInvitesModal(){
-  document.getElementById('modal-inv-count').textContent=invitesData.length+' invites';
-  const body=document.getElementById('modal-inv-body');
-  if(!invitesData.length){
-    body.innerHTML='<div class="tx-empty">No invites recorded yet.<br>Share your link to start growing your army.</div>';
-    return;
+  // Earnings display — shows total earned
+  document.getElementById('earn-total').innerHTML=fmtE(totalEarned)+'<sup>IQD</sup>';
+  document.getElementById('earn-desc').innerHTML=
+    '<strong>'+txs.length+' transactions</strong> &middot; '+
+    invites.length+' drivers &middot; <strong>'+fmt(totalSpend)+' IQD</strong> spent';
+
+  // Withdraw button state
+  var btn=document.getElementById('wd-trigger-btn');
+  var badge=document.getElementById('pending-badge');
+  if(hasPending){
+    btn.disabled=true;
+    btn.textContent='PENDING...';
+    badge.style.display='block';
+    badge.textContent='Withdrawal of '+fmt(pending[0].amount)+' IQD is pending admin approval';
+  } else if(currentBalance<1000){
+    btn.disabled=true;
+    btn.textContent='WITHDRAW';
+    badge.style.display='none';
+  } else {
+    btn.disabled=false;
+    btn.textContent='WITHDRAW';
+    badge.style.display='none';
   }
-  body.innerHTML=invitesData.map((inv,i)=>`
-    <div class="invite-row">
-      <div>
-        <div class="inv-name">${inv.race_username}</div>
-        <div class="inv-date">Joined ${inv.joined_date}</div>
-      </div>
-      <div class="inv-joined">#${invitesData.length-i}</div>
-    </div>`).join('');
+
+  // Stats
+  document.getElementById('st-invites').textContent=invites.length;
+  document.getElementById('st-txs').textContent=txs.length;
+  document.getElementById('st-spend').textContent=fmt(totalSpend);
+  document.getElementById('inv-count-badge').textContent=invites.length;
+  document.getElementById('tx-count').textContent=txs.length+' FILLS';
+
+  // TX list
+  var txEl=document.getElementById('txlist');
+  if(txs.length){
+    var h='';
+    txs.forEach(function(t){
+      var earned=parseFloat(t.amount_spent)*RATE;
+      h+='<div class="tx-row">';
+      h+='<div><div class="tx-user">'+t.race_username+'</div><div class="tx-date">'+t.transaction_date+'</div></div>';
+      h+='<div><div class="tx-spent">'+fmt(t.amount_spent)+' IQD</div><div class="tx-earn">+'+fmtE(earned)+' IQD</div></div>';
+      h+='</div>';
+    });
+    txEl.innerHTML=h;
+  } else {
+    txEl.innerHTML='<div class="tx-empty">No transactions yet.<br>Earnings appear here as your invitees fill up.</div>';
+  }
+
+  // Invites modal
+  invitesCache=invites;
+  document.getElementById('modal-cnt').textContent=invites.length+' invite'+(invites.length!==1?'s':'');
+  document.getElementById('army-count').textContent=invites.length;
+  var body=document.getElementById('modal-body');
+  if(!invites.length){
+    body.innerHTML='<div class="tx-empty">No invites yet. Share your link.</div>';
+  } else {
+    var h2='';
+    invites.forEach(function(inv,i){
+      h2+='<div class="invite-row">';
+      h2+='<div style="display:flex;align-items:center;gap:12px">';
+      h2+='<div class="inv-num">'+(invites.length-i)+'</div>';
+      h2+='<div><div class="inv-name">'+inv.race_username+'</div><div class="inv-date">Joined '+inv.joined_date+'</div></div>';
+      h2+='</div></div>';
+    });
+    body.innerHTML=h2;
+  }
 }
 
-function showErr(msg){
-  document.getElementById('loading').style.display='none';
-  const e=document.getElementById('error');
-  e.style.display='flex';
-  document.getElementById('err-msg').textContent=msg;
+function refresh(){
+  Promise.all([
+    sbGet('agent_transactions?agent_id=eq.'+agentId+'&order=created_at.desc&select=*'),
+    sbGet('agent_invites?agent_id=eq.'+agentId+'&order=joined_date.desc&select=*'),
+    sbGet('agent_withdrawals?agent_id=eq.'+agentId+'&select=*')
+  ]).then(function(res){renderAll(res[0],res[1],res[2]);}).catch(function(){});
 }
 
 function copyRef(){
-  navigator.clipboard.writeText(refLink).then(()=>{
-    const b=document.getElementById('copy-ref-btn');
-    b.textContent='COPIED!';b.classList.add('ok');
-    setTimeout(()=>{b.textContent='COPY';b.classList.remove('ok');},2500);
+  var btn=document.getElementById('copy-ref-btn');
+  navigator.clipboard.writeText(refLink).then(function(){
+    btn.textContent='COPIED!';btn.style.borderColor='#2ecc71';btn.style.color='#2ecc71';
+    setTimeout(function(){btn.textContent='COPY';btn.style.borderColor='';btn.style.color='';},2500);
   });
 }
-
 function shareLink(){
-  if(navigator.share){
-    navigator.share({title:'Join RACE',text:'🚗 Join RACE — fuel rewards for Erbil drivers!',url:refLink});
-  } else {copyRef();}
+  if(navigator.share){navigator.share({title:'Join RACE',text:'Join RACE — fuel rewards for Erbil drivers!',url:refLink});}
+  else{copyRef();}
 }
-
-let qrOpen=false;
 function toggleQR(){
-  const body=document.getElementById('qr-body'),arrow=document.getElementById('qr-arrow');
   qrOpen=!qrOpen;
-  body.classList.toggle('open',qrOpen);
-  arrow.style.transform=qrOpen?'rotate(180deg)':'';
+  document.getElementById('qrbody').classList.toggle('open',qrOpen);
+  document.getElementById('qrarr').style.transform=qrOpen?'rotate(180deg)':'';
   if(qrOpen&&!qrDone&&refLink){
-    document.getElementById('qr-code').innerHTML='';
-    new QRCode(document.getElementById('qr-code'),{text:refLink,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
+    document.getElementById('qrcode').innerHTML='';
+    new QRCode(document.getElementById('qrcode'),{text:refLink,width:200,height:200,colorDark:'#000',colorLight:'#fff',correctLevel:QRCode.CorrectLevel.H});
     qrDone=true;
   }
 }
+function openArmy(){document.getElementById('armymodal').classList.add('open');document.body.style.overflow='hidden';}
+function closeArmy(){document.getElementById('armymodal').classList.remove('open');document.body.style.overflow='';}
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('armymodal').addEventListener('click',function(e){if(e.target===this)closeArmy();});
+});
 
-function openInvites(){
-  document.getElementById('inv-modal').classList.add('open');
+// WITHDRAW
+function openWithdraw(){
+  if(hasPending||currentBalance<1000)return;
+  document.getElementById('wd-avail-txt').innerHTML='Available balance: <strong>'+fmtE(currentBalance)+' IQD</strong>';
+  document.getElementById('wd-inp').value='';
+  document.getElementById('wd-modal').classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeInvites(){
-  document.getElementById('inv-modal').classList.remove('open');
+function closeWithdraw(){
+  document.getElementById('wd-modal').classList.remove('open');
   document.body.style.overflow='';
 }
-function closeInvitesOutside(e){
-  if(e.target===document.getElementById('inv-modal'))closeInvites();
+function setMaxWd(){
+  document.getElementById('wd-inp').value=Math.floor(currentBalance);
 }
-
-boot();
-
-var currentBalance = 0;
-var hasPending = false;
-
-function calcBalance(txs, withdrawals) {
-  var totalEarned = txs.reduce(function(s,t) { return s + parseFloat(t.amount_spent) * 0.0025; }, 0);
-  var totalWithdrawn = withdrawals
-    .filter(function(w) { return w.status === 'confirmed'; })
-    .reduce(function(s,w) { return s + parseFloat(w.amount); }, 0);
-  return Math.max(0, totalEarned - totalWithdrawn);
-}
-
-function renderBalance(txs, withdrawals) {
-  currentBalance = calcBalance(txs, withdrawals);
-  var pending = withdrawals.filter(function(w) { return w.status === 'pending'; });
-  hasPending = pending.length > 0;
-
-  document.getElementById('bal-amount').innerHTML = fmtE(currentBalance) + '<span>IQD</span>';
-  document.getElementById('bal-sub').textContent = 'Total earned minus ' + fmt(withdrawals.filter(function(w){return w.status==='confirmed';}).reduce(function(s,w){return s+parseFloat(w.amount);},0)) + ' IQD withdrawn';
-
-  var btn = document.getElementById('btn-withdraw');
-  var badge = document.getElementById('pending-badge');
-
-  if (hasPending) {
-    btn.disabled = true;
-    btn.textContent = 'REQUEST PENDING...';
-    badge.style.display = 'block';
-    var amt = fmt(pending[0].amount);
-    badge.textContent = '⏳ Withdrawal of ' + amt + ' IQD pending admin approval';
-  } else if (currentBalance < 1000) {
-    btn.disabled = true;
-    btn.textContent = 'WITHDRAW (min 1,000 IQD)';
-    badge.style.display = 'none';
-  } else {
-    btn.disabled = false;
-    btn.textContent = 'WITHDRAW';
-    badge.style.display = 'none';
-  }
-}
-
-function openWithdraw() {
-  if (hasPending || currentBalance < 1000) return;
-  document.getElementById('wd-sheet-sub').textContent = 'Available balance: ' + fmtE(currentBalance) + ' IQD';
-  document.getElementById('wd-inp').value = '';
-  document.getElementById('wd-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  setTimeout(function() { document.getElementById('wd-inp').focus(); }, 400);
-}
-
-function closeWithdraw() {
-  document.getElementById('wd-modal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function setMaxWithdraw() {
-  document.getElementById('wd-inp').value = Math.floor(currentBalance);
-}
-
-function submitWithdraw() {
-  var amt = parseFloat(document.getElementById('wd-inp').value);
-  if (!amt || amt < 1000) { alert('Minimum withdrawal is 1,000 IQD'); return; }
-  if (amt > currentBalance) { alert('Amount exceeds your balance of ' + fmtE(currentBalance) + ' IQD'); return; }
-
-  var btn = document.querySelector('.btn-request');
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-
-  fetch('https://zluhwkdrijrklviijuvl.supabase.co/rest/v1/agent_withdrawals', {
-    method: 'POST',
-    headers: {
-      'apikey': KEY,
-      'Authorization': 'Bearer ' + KEY,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
-    body: JSON.stringify({ agent_id: agentId, amount: amt, status: 'pending' })
-  }).then(function(r) {
-    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+function submitWd(){
+  var amt=parseFloat(document.getElementById('wd-inp').value);
+  if(!amt||isNaN(amt)){alert('Please enter an amount');return;}
+  if(amt<1000){alert('Minimum withdrawal is 1,000 IQD');return;}
+  if(amt>currentBalance){alert('Cannot exceed your balance of '+fmtE(currentBalance)+' IQD');return;}
+  var btn=document.getElementById('wd-submit-btn');
+  btn.disabled=true;btn.textContent='Sending...';
+  sbPost('agent_withdrawals',{agent_id:agentId,amount:amt,status:'pending'})
+  .then(function(){
     closeWithdraw();
-    btn.textContent = 'REQUEST TRANSFER';
-    btn.disabled = false;
+    btn.disabled=false;btn.textContent='REQUEST TRANSFER';
     refresh();
-  }).catch(function(e) {
-    alert('Error: ' + e.message);
-    btn.textContent = 'REQUEST TRANSFER';
-    btn.disabled = false;
+  }).catch(function(e){
+    alert('Error: '+e.message);
+    btn.disabled=false;btn.textContent='REQUEST TRANSFER';
   });
 }
 
-document.getElementById('wd-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeWithdraw();
-});
-
+boot();
 </script>
-
-<!-- WITHDRAW MODAL -->
-<div class="wd-modal-bg" id="wd-modal">
-  <div class="wd-sheet" onclick="event.stopPropagation()">
-    <div class="wd-sheet-title">Request Withdrawal</div>
-    <div class="wd-sheet-sub" id="wd-sheet-sub">Available balance: 0 IQD</div>
-    <div class="wd-inp-wrap">
-      <input type="number" id="wd-inp" placeholder="0" min="1">
-      <span class="wd-inp-suffix">IQD</span>
-    </div>
-    <button class="wd-max-btn" onclick="setMaxWithdraw()">USE FULL BALANCE</button>
-    <button class="btn-request" onclick="submitWithdraw()">REQUEST TRANSFER</button>
-    <button class="btn-cancel-wd" onclick="closeWithdraw()">CANCEL</button>
-  </div>
-</div>
-
 </body>
 </html>
