@@ -112,6 +112,19 @@ body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;min-h
 .filt select{padding:7px 24px 7px 10px;background:var(--s2);border:1px solid var(--b1);color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:11px;border-radius:3px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center}
 @media(max-width:600px){.f2,.f3{grid-template-columns:1fr}.ovgrid{grid-template-columns:1fr 1fr}.pg{padding:14px}.card{padding:14px}}
 .rbadge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#E66A2A;color:#fff;font-weight:900;font-size:18px;border-radius:8px;flex-shrink:0;font-family:'Outfit',sans-serif;}
+
+.wd-card{background:var(--s1);border:1px solid var(--b1);border-radius:6px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.wd-card.pending{border-left:3px solid var(--o)}
+.wd-card.confirmed{border-left:3px solid var(--green);opacity:.7}
+.wd-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.wd-amount{font-size:20px;font-weight:800;color:var(--o)}
+.wd-amount.confirmed{color:var(--green)}
+.wd-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:3px}
+.wd-actions{display:flex;gap:8px;flex-shrink:0}
+.btn-confirm{padding:9px 16px;background:var(--green);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border-radius:3px;transition:all .2s}
+.btn-confirm:hover{opacity:.85}
+.btn-reject{padding:9px 14px;background:none;border:1px solid rgba(231,76,60,.5);color:var(--red);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;border-radius:3px;transition:all .2s}
+.btn-reject:hover{background:var(--red);color:#fff;border-color:var(--red)}
 </style>
 </head>
 <body>
@@ -150,6 +163,7 @@ body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;min-h
     <button class="tb" onclick="goTab('txs',this)">TRANSACTIONS</button>
     <button class="tb" onclick="goTab('invites',this)">INVITES</button>
     <button class="tb" onclick="goTab('overview',this)">OVERVIEW</button>
+    <button class="tb" onclick="goTab('withdrawals',this)">WITHDRAWALS <span id="wd-badge" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;margin-left:4px;display:none">0</span></button>
   </div>
 
   <!-- AGENTS -->
@@ -211,6 +225,14 @@ body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;min-h
     </div>
     <div class="slbl">// PER-AGENT</div>
     <div id="ovlist"><div class="empty">Loading...</div></div>
+  </div>
+
+  <!-- WITHDRAWALS -->
+  <div class="pg" id="pg-withdrawals">
+    <div class="slbl">// PENDING WITHDRAWAL REQUESTS</div>
+    <div id="wd-list"><div class="empty">Loading...</div></div>
+    <div class="slbl" style="margin-top:20px">// CONFIRMED WITHDRAWALS HISTORY</div>
+    <div id="wd-history"><div class="empty">Loading...</div></div>
   </div>
 </div>
 
@@ -301,6 +323,7 @@ function goTab(id, el) {
   if (id === 'txs') { populateSels(); loadTxs(); }
   if (id === 'invites') { populateSels(); loadInvites(); }
   if (id === 'overview') { loadOverview(); }
+  if (id === 'withdrawals') { loadWithdrawals(); }
 }
 
 // ── BOOT ──────────────────────────────────────────────────────────────────
@@ -546,6 +569,95 @@ function loadOverview() {
     document.getElementById('ovlist').innerHTML = h || '<div class="empty">No data</div>';
   }).catch(function(e) { document.getElementById('ovlist').innerHTML = '<div class="empty">Error: ' + e.message + '</div>'; });
 }
+
+// ── WITHDRAWALS ───────────────────────────────────────────────────────────
+function loadWithdrawals() {
+  var pendingEl = document.getElementById('wd-list');
+  var historyEl = document.getElementById('wd-history');
+  pendingEl.innerHTML = '<div class="empty">Loading...</div>';
+  historyEl.innerHTML = '<div class="empty">Loading...</div>';
+
+  sbFetch('agent_withdrawals?order=requested_at.desc&select=*,vip_agents(name)').then(function(data) {
+    var pending = data.filter(function(w) { return w.status === 'pending'; });
+    var confirmed = data.filter(function(w) { return w.status === 'confirmed'; });
+
+    // Update badge
+    var badge = document.getElementById('wd-badge');
+    if (pending.length > 0) {
+      badge.textContent = pending.length;
+      badge.style.display = 'inline';
+    } else {
+      badge.style.display = 'none';
+    }
+
+    // Pending
+    if (!pending.length) {
+      pendingEl.innerHTML = '<div class="empty">No pending requests.</div>';
+    } else {
+      var h = '';
+      pending.forEach(function(w) {
+        var d = new Date(w.requested_at).toLocaleDateString('en-GB');
+        h += '<div class="wd-card pending">';
+        h += '<div>';
+        h += '<div class="wd-name">' + (w.vip_agents ? w.vip_agents.name : '—') + '</div>';
+        h += '<div class="wd-amount">' + fmt(w.amount) + ' IQD</div>';
+        h += '<div class="wd-meta">Requested ' + d + '</div>';
+        h += '</div>';
+        h += '<div class="wd-actions">';
+        h += '<button class="btn-confirm" data-id="' + w.id + '" data-agent="' + w.agent_id + '" data-amount="' + w.amount + '" onclick="confirmWithdrawal(this)">✓ CONFIRM TRANSFER</button>';
+        h += '<button class="btn-reject" data-id="' + w.id + '" onclick="rejectWithdrawal(this)">REJECT</button>';
+        h += '</div>';
+        h += '</div>';
+      });
+      pendingEl.innerHTML = h;
+    }
+
+    // History
+    if (!confirmed.length) {
+      historyEl.innerHTML = '<div class="empty">No confirmed withdrawals yet.</div>';
+    } else {
+      var h2 = '<table class="ttbl"><thead><tr><th>AGENT</th><th>AMOUNT</th><th>CONFIRMED</th></tr></thead><tbody>';
+      confirmed.forEach(function(w) {
+        var d = w.confirmed_at ? new Date(w.confirmed_at).toLocaleDateString('en-GB') : '—';
+        h2 += '<tr>';
+        h2 += '<td style="font-size:12px">' + (w.vip_agents ? w.vip_agents.name : '—') + '</td>';
+        h2 += '<td class="tg">-' + fmt(w.amount) + ' IQD</td>';
+        h2 += '<td class="td">' + d + '</td>';
+        h2 += '</tr>';
+      });
+      h2 += '</tbody></table>';
+      historyEl.innerHTML = '<div class="card" style="padding:0;overflow:hidden"><div class="tscroll">' + h2 + '</div></div>';
+    }
+  }).catch(function(e) {
+    pendingEl.innerHTML = '<div class="empty">Error: ' + e.message + '</div>';
+  });
+}
+
+function confirmWithdrawal(btn) {
+  var id = btn.getAttribute('data-id');
+  var agentName = btn.closest('.wd-card').querySelector('.wd-name').textContent;
+  var amount = btn.getAttribute('data-amount');
+  if (!confirm('Confirm transfer of ' + fmt(parseFloat(amount)) + ' IQD to ' + agentName + '?')) return;
+  sbFetch('agent_withdrawals?id=eq.' + id, 'PATCH', {
+    status: 'confirmed',
+    confirmed_at: new Date().toISOString()
+  }).then(function() {
+    showToast('Transfer confirmed — balance updated for agent');
+    loadWithdrawals();
+    loadAgents();
+  }).catch(function(e) { showToast('Error: ' + e.message, true); });
+}
+
+function rejectWithdrawal(btn) {
+  var id = btn.getAttribute('data-id');
+  if (!confirm('Reject this withdrawal request?')) return;
+  sbFetch('agent_withdrawals?id=eq.' + id, 'DELETE').then(function() {
+    showToast('Request rejected and removed');
+    loadWithdrawals();
+    loadAgents();
+  }).catch(function(e) { showToast('Error', true); });
+}
+
 </script>
 </body>
 </html>
