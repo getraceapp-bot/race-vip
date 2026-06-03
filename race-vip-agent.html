@@ -5,7 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>RACE VIP Agent</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+var currentBalance = 0;
+var hasPending = false;
+
+function calcBalance(txs, withdrawals) {
+  var totalEarned = txs.reduce(function(s,t) { return s + parseFloat(t.amount_spent) * 0.0025; }, 0);
+  var totalWithdrawn = withdrawals
+    .filter(function(w) { return w.status === 'confirmed'; })
+    .reduce(function(s,w) { return s + parseFloat(w.amount); }, 0);
+  return Math.max(0, totalEarned - totalWithdrawn);
+}
+
+function renderBalance(txs, withdrawals) {
+  currentBalance = calcBalance(txs, withdrawals);
+  var pending = withdrawals.filter(function(w) { return w.status === 'pending'; });
+  hasPending = pending.length > 0;
+
+  document.getElementById('bal-amount').innerHTML = fmtE(currentBalance) + '<span>IQD</span>';
+  document.getElementById('bal-sub').textContent = 'Total earned minus ' + fmt(withdrawals.filter(function(w){return w.status==='confirmed';}).reduce(function(s,w){return s+parseFloat(w.amount);},0)) + ' IQD withdrawn';
+
+  var btn = document.getElementById('btn-withdraw');
+  var badge = document.getElementById('pending-badge');
+
+  if (hasPending) {
+    btn.disabled = true;
+    btn.textContent = 'REQUEST PENDING...';
+    badge.style.display = 'block';
+    var amt = fmt(pending[0].amount);
+    badge.textContent = '⏳ Withdrawal of ' + amt + ' IQD pending admin approval';
+  } else if (currentBalance < 1000) {
+    btn.disabled = true;
+    btn.textContent = 'WITHDRAW (min 1,000 IQD)';
+    badge.style.display = 'none';
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'WITHDRAW';
+    badge.style.display = 'none';
+  }
+}
+
+function openWithdraw() {
+  if (hasPending || currentBalance < 1000) return;
+  document.getElementById('wd-sheet-sub').textContent = 'Available balance: ' + fmtE(currentBalance) + ' IQD';
+  document.getElementById('wd-inp').value = '';
+  document.getElementById('wd-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('wd-inp').focus(); }, 400);
+}
+
+function closeWithdraw() {
+  document.getElementById('wd-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setMaxWithdraw() {
+  document.getElementById('wd-inp').value = Math.floor(currentBalance);
+}
+
+function submitWithdraw() {
+  var amt = parseFloat(document.getElementById('wd-inp').value);
+  if (!amt || amt < 1000) { alert('Minimum withdrawal is 1,000 IQD'); return; }
+  if (amt > currentBalance) { alert('Amount exceeds your balance of ' + fmtE(currentBalance) + ' IQD'); return; }
+
+  var btn = document.querySelector('.btn-request');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  fetch('https://zluhwkdrijrklviijuvl.supabase.co/rest/v1/agent_withdrawals', {
+    method: 'POST',
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify({ agent_id: agentId, amount: amt, status: 'pending' })
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    closeWithdraw();
+    btn.textContent = 'REQUEST TRANSFER';
+    btn.disabled = false;
+    refresh();
+  }).catch(function(e) {
+    alert('Error: ' + e.message);
+    btn.textContent = 'REQUEST TRANSFER';
+    btn.disabled = false;
+  });
+}
+
+document.getElementById('wd-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeWithdraw();
+});
+
+</script>
 <style>
 :root{
   --o:#E66A2A;--o2:#ff7a35;--od:rgba(230,106,42,0.13);--og:rgba(230,106,42,0.3);
@@ -151,6 +244,33 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
   main{padding:14px;gap:12px}
 }
 .rbadge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:#E66A2A;color:#fff;font-weight:900;font-size:18px;border-radius:8px;flex-shrink:0;font-family:'Outfit',sans-serif;}
+
+.balance-card{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:22px;position:relative;overflow:hidden}
+.balance-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),#27ae60)}
+.bal-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--dim);margin-bottom:8px}
+.bal-amount{font-size:40px;font-weight:900;letter-spacing:-2px;color:var(--green);margin-bottom:4px}
+.bal-amount span{font-size:16px;font-weight:500;color:var(--dim);letter-spacing:0;margin-left:4px}
+.bal-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.btn-withdraw{width:100%;margin-top:16px;padding:14px;background:var(--green);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;letter-spacing:.5px}
+.btn-withdraw:hover{opacity:.85}
+.btn-withdraw:active{transform:scale(.98)}
+.btn-withdraw:disabled{background:var(--b2);color:var(--dim);cursor:not-allowed;transform:none}
+.pending-badge{margin-top:12px;padding:10px 14px;background:rgba(230,106,42,0.1);border:1px solid rgba(230,106,42,0.3);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--o);display:none}
+.wd-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+.wd-modal-bg.open{display:flex}
+.wd-sheet{background:var(--s1);border:1px solid var(--b1);border-radius:16px 16px 0 0;width:100%;max-width:640px;padding:28px 24px 36px;animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
+.wd-sheet-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.wd-sheet-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-bottom:20px}
+.wd-inp-wrap{position:relative;margin-bottom:14px}
+.wd-inp-wrap input{width:100%;padding:14px 70px 14px 16px;background:var(--bg);border:1px solid var(--b2);color:var(--txt);font-family:'JetBrains Mono',monospace;font-size:18px;outline:none;border-radius:6px;letter-spacing:1px;transition:border-color .2s}
+.wd-inp-wrap input:focus{border-color:var(--green)}
+.wd-inp-suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+.wd-max-btn{width:100%;padding:10px;background:none;border:1px dashed var(--b2);color:var(--dim);font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;border-radius:6px;margin-bottom:14px;transition:all .2s}
+.wd-max-btn:hover{border-color:var(--green);color:var(--green)}
+.btn-request{width:100%;padding:15px;background:var(--green);border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;border-radius:6px;transition:all .2s;margin-bottom:10px}
+.btn-request:hover{opacity:.85}
+.btn-cancel-wd{width:100%;padding:12px;background:none;border:1px solid var(--b2);color:var(--dim);font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;border-radius:6px;transition:all .2s}
+.btn-cancel-wd:hover{border-color:var(--red);color:var(--red)}
 </style>
 </head>
 <body>
@@ -432,6 +552,115 @@ function closeInvitesOutside(e){
 }
 
 boot();
+
+var currentBalance = 0;
+var hasPending = false;
+
+function calcBalance(txs, withdrawals) {
+  var totalEarned = txs.reduce(function(s,t) { return s + parseFloat(t.amount_spent) * 0.0025; }, 0);
+  var totalWithdrawn = withdrawals
+    .filter(function(w) { return w.status === 'confirmed'; })
+    .reduce(function(s,w) { return s + parseFloat(w.amount); }, 0);
+  return Math.max(0, totalEarned - totalWithdrawn);
+}
+
+function renderBalance(txs, withdrawals) {
+  currentBalance = calcBalance(txs, withdrawals);
+  var pending = withdrawals.filter(function(w) { return w.status === 'pending'; });
+  hasPending = pending.length > 0;
+
+  document.getElementById('bal-amount').innerHTML = fmtE(currentBalance) + '<span>IQD</span>';
+  document.getElementById('bal-sub').textContent = 'Total earned minus ' + fmt(withdrawals.filter(function(w){return w.status==='confirmed';}).reduce(function(s,w){return s+parseFloat(w.amount);},0)) + ' IQD withdrawn';
+
+  var btn = document.getElementById('btn-withdraw');
+  var badge = document.getElementById('pending-badge');
+
+  if (hasPending) {
+    btn.disabled = true;
+    btn.textContent = 'REQUEST PENDING...';
+    badge.style.display = 'block';
+    var amt = fmt(pending[0].amount);
+    badge.textContent = '⏳ Withdrawal of ' + amt + ' IQD pending admin approval';
+  } else if (currentBalance < 1000) {
+    btn.disabled = true;
+    btn.textContent = 'WITHDRAW (min 1,000 IQD)';
+    badge.style.display = 'none';
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'WITHDRAW';
+    badge.style.display = 'none';
+  }
+}
+
+function openWithdraw() {
+  if (hasPending || currentBalance < 1000) return;
+  document.getElementById('wd-sheet-sub').textContent = 'Available balance: ' + fmtE(currentBalance) + ' IQD';
+  document.getElementById('wd-inp').value = '';
+  document.getElementById('wd-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(function() { document.getElementById('wd-inp').focus(); }, 400);
+}
+
+function closeWithdraw() {
+  document.getElementById('wd-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function setMaxWithdraw() {
+  document.getElementById('wd-inp').value = Math.floor(currentBalance);
+}
+
+function submitWithdraw() {
+  var amt = parseFloat(document.getElementById('wd-inp').value);
+  if (!amt || amt < 1000) { alert('Minimum withdrawal is 1,000 IQD'); return; }
+  if (amt > currentBalance) { alert('Amount exceeds your balance of ' + fmtE(currentBalance) + ' IQD'); return; }
+
+  var btn = document.querySelector('.btn-request');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  fetch('https://zluhwkdrijrklviijuvl.supabase.co/rest/v1/agent_withdrawals', {
+    method: 'POST',
+    headers: {
+      'apikey': KEY,
+      'Authorization': 'Bearer ' + KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify({ agent_id: agentId, amount: amt, status: 'pending' })
+  }).then(function(r) {
+    if (!r.ok) return r.text().then(function(t) { throw new Error(t); });
+    closeWithdraw();
+    btn.textContent = 'REQUEST TRANSFER';
+    btn.disabled = false;
+    refresh();
+  }).catch(function(e) {
+    alert('Error: ' + e.message);
+    btn.textContent = 'REQUEST TRANSFER';
+    btn.disabled = false;
+  });
+}
+
+document.getElementById('wd-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeWithdraw();
+});
+
 </script>
+
+<!-- WITHDRAW MODAL -->
+<div class="wd-modal-bg" id="wd-modal">
+  <div class="wd-sheet" onclick="event.stopPropagation()">
+    <div class="wd-sheet-title">Request Withdrawal</div>
+    <div class="wd-sheet-sub" id="wd-sheet-sub">Available balance: 0 IQD</div>
+    <div class="wd-inp-wrap">
+      <input type="number" id="wd-inp" placeholder="0" min="1">
+      <span class="wd-inp-suffix">IQD</span>
+    </div>
+    <button class="wd-max-btn" onclick="setMaxWithdraw()">USE FULL BALANCE</button>
+    <button class="btn-request" onclick="submitWithdraw()">REQUEST TRANSFER</button>
+    <button class="btn-cancel-wd" onclick="closeWithdraw()">CANCEL</button>
+  </div>
+</div>
+
 </body>
 </html>
