@@ -154,6 +154,12 @@ main{padding:20px;max-width:640px;margin:0 auto;display:flex;flex-direction:colu
 
 footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--b2);letter-spacing:1px}
 @media(max-width:420px){.earn-num{font-size:34px}.stats-row{grid-template-columns:repeat(3,1fr)}main{padding:14px;gap:12px}}
+
+.earn-divider{height:1px;background:var(--b1);margin:16px 0}
+.bal-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bal-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--dim);margin-bottom:5px}
+.bal-num{font-size:26px;font-weight:800;color:var(--green)}
+.bal-num span{font-size:13px;font-weight:500;color:var(--dim);margin-left:3px}
 </style>
 </head>
 <body>
@@ -187,9 +193,16 @@ footer{text-align:center;padding:20px;font-family:'JetBrains Mono',monospace;fon
       <div class="earn-lbl">// YOUR TOTAL EARNINGS</div>
       <div class="earn-top-row">
         <div class="earn-num" id="earn-total">0<sup>IQD</sup></div>
-        <button class="wd-btn" id="wd-trigger-btn" onclick="openWithdraw()" disabled>WITHDRAW</button>
       </div>
       <div class="earn-sub" id="earn-desc">Loading your data...</div>
+      <div class="earn-divider"></div>
+      <div class="bal-row">
+        <div>
+          <div class="bal-lbl">AVAILABLE BALANCE</div>
+          <div class="bal-num" id="bal-amount">0 <span>IQD</span></div>
+        </div>
+        <button class="wd-btn" id="wd-trigger-btn" onclick="openWithdraw()" disabled>WITHDRAW</button>
+      </div>
       <div class="pending-note" id="pending-note"></div>
     </div>
 
@@ -361,6 +374,7 @@ function renderAll(txs, invites, withdrawals) {
   hasPending = pending.length > 0;
 
   document.getElementById('earn-total').innerHTML = fmtE(totalEarned) + '<sup>IQD</sup>';
+  document.getElementById('bal-amount').innerHTML = fmtE(currentBalance) + ' <span>IQD</span>';
   document.getElementById('earn-desc').innerHTML =
     '<strong>' + txs.length + ' transactions</strong> &middot; ' +
     invites.length + ' drivers &middot; <strong>' + fmt(totalSpend) + ' IQD</strong> total spend';
